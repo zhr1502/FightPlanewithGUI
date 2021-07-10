@@ -4,7 +4,7 @@ English | [简体中文](https://github.com/zhr1502/FightPlanewithGUI/blob/main/
 
 # FightPlanewithGUI
 An GUI application that enables you to play Planefight.
-FightPlane is an in-paper game originally. ** [Here](https://github.com/Zjl37/planeFight2/wiki/Game-Introduction) is the introductions and gamerules of the game.**
+FightPlane is an in-paper game originally. **[Here](https://github.com/Zjl37/planeFight2/wiki/Game-Introduction) is the introductions and gamerules of the game.**
 ### Purpose
 ---
 This project is inspired by [planeFight2](https://github.com/Zjl37/planeFight2). However [planeFight2](https://github.com/Zjl37/planeFight2) runs with console, making it unconfortable to play.
