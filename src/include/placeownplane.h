@@ -1,6 +1,7 @@
 
 inline bool check_legal(int num){
     int face=plane_list[num].face;
+    if(planemap[plane_list[num].x][plane_list[num].y]) return 0;
     for(int k=1;k<=9;k++){
         int x_set=plane_list[num].x+accum[face_opt[face][0]][k]*face_opt[face][1],
             y_set=plane_list[num].y+accum[face_opt[face][0]^1][k]*face_opt[face][1];
