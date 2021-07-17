@@ -1,5 +1,7 @@
 #include<bits/stdc++.h>
-#include<windows.h>
+#ifdef WIN32
+    #include<windows.h>
+#endif
 #include"include/GL/glut.h"
 #include"include/GL/freeglut.h"
 using namespace std;
@@ -124,14 +126,25 @@ void Mymouse(int button,int state,int x,int y){
                target_x=table_pos_x,target_y=table_pos_y;
         }
     }
-    return;
-}
-void MouseWheel(int button,int dir,int x,int y){
-    if(dir>0) rotate(1,plane_num);
-    if(dir<0) rotate(-1,plane_num);
+    #ifdef linux
+        if(button==3&&state==GLUT_DOWN){
+            rotate(1,plane_num);
+        }
+        if(button==4&&state==GLUT_DOWN){
+            rotate(-1,plane_num);
+        }
+    #endif
     glutPostRedisplay();
     return;
 }
+#ifdef WIN32
+    void MouseWheel(int button,int dir,int x,int y){
+        if(dir>0) rotate(1,plane_num);
+        if(dir<0) rotate(-1,plane_num);
+        glutPostRedisplay();
+        return;
+    }
+#endif
 int main(int argc,char **argv){
     glutInit(&argc,argv);
     glutInitWindowPosition(50,50);
@@ -143,7 +156,9 @@ int main(int argc,char **argv){
     glutMouseFunc(&Mymouse);
     glutSpecialFunc(&specialkey);
     glutKeyboardFunc(&keyboarddetecter);
-    glutMouseWheelFunc(MouseWheel);
+    #ifdef WIN32
+        glutMouseWheelFunc(MouseWheel);
+    #endif
     stage_now=1;
     create_plane();
     glutMainLoop();

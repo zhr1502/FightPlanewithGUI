@@ -1,4 +1,4 @@
-[English](https://github.com/zhr1502/GPlanewithGUI/blob/main/README.md) | 简体中文 
+[English](https://github.com/zhr1502/GFightPlane/blob/main/README.md) | 简体中文 
 
 ### FightPlane目前还没有完成，你只能体验其中一部分功能。
 
