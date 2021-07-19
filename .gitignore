@@ -1,1 +1,6 @@
 src/.vscode
+.vscode/*
+!.vscode/tasks.json
+.clang-format
+compile_flags.txt
+/bin
