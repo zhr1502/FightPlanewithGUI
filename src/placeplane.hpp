@@ -1,4 +1,3 @@
-
 inline bool check_legal(int num){
     int face=plane_list[num].face;
     if(planemap[plane_list[num].x][plane_list[num].y]) return 0;

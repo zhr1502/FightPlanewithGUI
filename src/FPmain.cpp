@@ -2,8 +2,8 @@
 #ifdef WIN32
     #include<windows.h>
 #endif
-#include"include/GL/glut.h"
-#include"include/GL/freeglut.h"
+#include<GL/glut.h>
+#include<GL/freeglut.h>
 using namespace std;
 const int face_opt[5][2]={{},{0,1},{1,1},{0,-1},{1,-1}};
 const int accum[2][10]={{0,1,1,1,1,1,2,3,3,3},{0,0,1,2,-1,-2,0,0,1,-1}};
@@ -40,7 +40,7 @@ float viwprt_zoom=1;
 int planemap[matrix_siz+1][matrix_siz+1],enemymap[matrix_siz+1][matrix_siz+1];
 bool is_target[matrix_siz+1][matrix_siz+1];
 int target_x=1,target_y=1,target_face=1;
-#include"include/placeownplane.h"
+#include"placeplane.hpp"
 inline void drawbar(const float *c,float a,float b,float siz){
     glColor3fv(c);
     glBegin(GL_POLYGON);
@@ -60,7 +60,7 @@ void Placeplane_displayinit(){
 }
 inline void display_table(int num){
     if(num==1){
-        printf("1\n");
+        //printf("1\n");
         for(int i=1;i<=matrix_siz;i++)
             for(int j=1;j<=matrix_siz;j++){
                     float core_X=-0.5-table_a*1.0/screen_w+(table_siz+2*(j-1)*table_siz)*screen_ratio,
@@ -134,7 +134,30 @@ void changeSize(int w,int h){
     else viwprt_siz=h;
     // glClear(GL_COLOR_BUFFER_BIT); memset(preplanemap,1,sizeof(preplanemap));
     // memset(pretarget,0,sizeof(pretarget));
+	/*
     glViewport(0, h-viwprt_siz, viwprt_siz/screen_ratio, viwprt_siz);
+	*/
+	glViewport(0,0,w,h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	if((float)w/screen_w>=(float)h/screen_h)
+		gluOrtho2D(-(float)w*screen_h/screen_w/h,(float)screen_h*w/screen_w/h,-1,1),printf("0");
+	else
+		gluOrtho2D(-1,1,-(float)h*screen_w/screen_h/w,(float)h*screen_w/screen_h/w),printf("1");	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	/*
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	if((float)w*screen_h/screen_w<=h){
+		gluOrtho2D(0.0f,(float)screen_w,0.0f,(float)screen_h);
+	}
+	else{
+		gluOrtho2D(0.0f,(float)screen_w,0.0f,(float)screen_h);
+	}
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	*/
 	return;
 }
 void Mymouse(int button,int state,int x,int y){
@@ -180,6 +203,10 @@ inline void init(int argc,char **argv){
     glutInitDisplayMode(GLUT_DOUBLE);
     glutCreateWindow(argv[1]);
     glutDisplayFunc(&display);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	gluOrtho2D(-1,1,-1,1);
     glutReshapeFunc(&changeSize);
     glutMouseFunc(&Mymouse);
     glutSpecialFunc(&specialkey);
