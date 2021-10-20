@@ -1,4 +1,11 @@
-inline bool check_legal(int num){
+#include"FPplane.hpp"
+const int face_opt[5][2]={{},{0,1},{1,1},{0,-1},{1,-1}};
+const int accum[2][10]={{0,1,1,1,1,1,2,3,3,3},{0,0,1,2,-1,-2,0,0,1,-1}};
+const int mv_x[5]={0,1,0,-1,0},mv_y[5]={0,0,1,0,-1};
+extern int plane_num,target_x,target_y,target_face;
+plane plane_list[5];
+int planemap[16][16],enemymap[16][16];
+bool check_legal(int num){
     int face=plane_list[num].face;
     if(planemap[plane_list[num].x][plane_list[num].y]) return 0;
     for(int k=1;k<=9;k++){
@@ -9,7 +16,7 @@ inline bool check_legal(int num){
     }
     return 1;
 }
-inline void show_plane_inmap(int num){
+void show_plane_inmap(int num){
     int face=plane_list[num].face;
     planemap[plane_list[num].x][plane_list[num].y]=plane_list[num].C;
     for(int k=1;k<=9;k++){
@@ -22,12 +29,12 @@ inline void show_plane_inmap(int num){
     //printf("\n");
     return;
 }
-inline void upd_plane_status(int num){
+void upd_plane_status(int num){
     if(check_legal(plane_num)) plane_list[plane_num].C=plane_num;
     else plane_list[plane_num].C=4;
     return;
 }
-inline void create_plane(){
+void create_plane(){
     plane_list[++plane_num].x=target_x; plane_list[plane_num].y=target_y;
     plane_list[plane_num].face=target_face;
     plane_list[plane_num].number=plane_num;
@@ -35,14 +42,14 @@ inline void create_plane(){
     show_plane_inmap(plane_num);
     return;
 }
-inline void rotate(int val,int num){
+void rotate(int val,int num){
     target_face+=val;
     if(target_face==5) target_face=1;
     if(target_face==0) target_face=4;
     plane_list[num].face=target_face;
     upd_plane_status(num);
 }
-inline bool confirm_plane_put(int num){
+bool confirm_plane_put(int num){
     int face=plane_list[num].face;
     if(plane_list[num].C==4) return 0;
     planemap[plane_list[num].x][plane_list[num].y]=num;
