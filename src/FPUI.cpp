@@ -5,10 +5,11 @@
 #include<GL/glut.h>
 #include<GL/freeglut.h>
 #include"FPplane.hpp"
+#include<utility>
 using namespace std;
 const int screen_h=450,screen_w=774,table_a=300;
 float R=0.5,G=0.5,B=0.5;
-const float color_define[6][3]={{0.5,0.5,0.5},{0,0,1},{0,1,0},{0.525,0.145,0.803},{0.7,0,0},{0,0,0}};
+//const float color_define[6][3]={{0.5,0.5,0.5},{0,0,1},{0,1,0},{0.525,0.145,0.803},{0.7,0,0},{0,0,0}};
 /*
 0 gray
 1 blue
@@ -27,12 +28,14 @@ int EdgeU,EdgeL;
 4 waiting for others attack
 5 game finished
 */
+
+#include"FPUI.hpp"
+button Button[10];
 const float screen_ratio=screen_h*1.0/screen_w;
-int viwprt_siz=300;
+int viwprt_siz=300,windowid,Buttonum;
 float viwprt_zoom=1;
 extern int target_x,target_y,target_face;
-#include"parameter.hpp"
-inline void drawbar(const float *c,float a,float b,float siz){
+void drawbar(const float *c,float a,float b,float siz){
     glColor3fv(c);
     glBegin(GL_POLYGON);
     glVertex2f(a-siz,b-siz);
@@ -49,7 +52,7 @@ void Placeplane_displayinit(){
     upd_plane_status(plane_num); show_plane_inmap(plane_num);
     return;
 }
-inline void display_table(int num){
+void display_table(int num){
 	float Midline=(float)(1+MapH)/2;
     for(int i=1;i<=MapH;i++)
         for(int j=1;j<=MapW;j++){
@@ -62,10 +65,19 @@ inline void display_table(int num){
         }
     return;
 }
+pair<float,float> TransformToOrtho(int x,int y){
+	return make_pair((x-EdgeL)/(screen_w*viwprt_zoom)*WidthSizeinAxis,(y-EdgeU)/(screen_h*viwprt_zoom)*HeightSizeinAxis);
+}
 void display(void){
+    glClear(GL_COLOR_BUFFER_BIT);
+	if(stage_now==0){
+		for(int i=1;i<=Buttonum;i++)
+			Button[i].display();
+		printf("%d button displayed\n",Buttonum);
+
+	}
     if(stage_now==1){
         Placeplane_displayinit();
-        glClear(GL_COLOR_BUFFER_BIT);
         display_table(1); display_table(2);
     }
     glFlush();
@@ -77,7 +89,7 @@ void keyboarddetecter(unsigned char c,int x,int y){
         if(c=='\n'||c=='\r') 
             if(confirm_plane_put(plane_num)){
                 if(plane_num<3) create_plane();
-                else stage_now++,exit(EXIT_SUCCESS);
+				else stage_now++;
             }
         if(c=='='){
             rotate(1,plane_num);
@@ -127,17 +139,24 @@ void changeSize(int w,int h){
 }
 void Mymouse(int button,int state,int x,int y){
     if(button==GLUT_MIDDLE_BUTTON) exit(EXIT_SUCCESS);
-	float MouseAxisX=(x-EdgeL)/(screen_w*viwprt_zoom)*WidthSizeinAxis,
-		  MouseAxisY=(y-EdgeU)/(screen_h*viwprt_zoom)*HeightSizeinAxis;
-	float MouseMapX=MouseAxisX-EdgeSiz,MouseMapY=MouseAxisY-TopBarSiz;
-
     if(button==GLUT_LEFT_BUTTON&&state==GLUT_DOWN){
+		if(stage_now==0){
+			for(int i=1;i<=Buttonum;i++) Button[i].Onpressed(x,y);
+		}
+		pair<float,float> Pos=TransformToOrtho(x,y);
+		float MouseMapX=Pos.first-EdgeSiz,MouseMapY=Pos.second-TopBarSiz;
         int table_pos_x=int(MouseMapX/TableSiz),table_pos_y=int(MouseMapY/TableSiz);
 		if(table_pos_x*TableSiz<MouseMapX) table_pos_x++;
 		if(table_pos_y*TableSiz<MouseMapY) table_pos_y++;
 		if(MouseMapX>=0&&MouseMapY>=0&&table_pos_x<=MapW&&table_pos_y<=MapH)
 			target_x=table_pos_y,target_y=table_pos_x;
     }
+	if(button==GLUT_LEFT_BUTTON&&state==GLUT_UP){
+		if(stage_now==0)
+			for(int i=1;i<=Buttonum;i++)
+				if(Button[i].is_pressed)
+					Button[i].Dispressed();
+	}
     #ifdef linux
         if(button==3&&state==GLUT_DOWN){
             rotate(1,plane_num);
@@ -157,12 +176,18 @@ void Mymouse(int button,int state,int x,int y){
         return;
     }
 #endif
-inline void init(int argc,char **argv){
+void mouseMove(int x,int y){
+	bool flag=0;
+	for(int i=1;i<=Buttonum;i++) flag|=Button[i].Onpitch(x,y);
+	if(flag) glutPostRedisplay();
+	return;
+}
+void init(int argc,char **argv){
     glutInit(&argc,argv);
     glutInitWindowPosition(50,50);
     glutInitWindowSize(screen_w,screen_h);
     glutInitDisplayMode(GLUT_DOUBLE);
-    glutCreateWindow(argv[1]);
+    windowid=glutCreateWindow(argv[1]);
     glutDisplayFunc(&display);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -171,7 +196,13 @@ inline void init(int argc,char **argv){
     glutMouseFunc(&Mymouse);
     glutSpecialFunc(&specialkey);
     glutKeyboardFunc(&keyboarddetecter);
+	glutPassiveMotionFunc(mouseMove);
     #ifdef WIN32
         glutMouseWheelFunc(MouseWheel);
     #endif
 }
+void DestroyWindow(){
+	glutDestroyWindow(windowid);
+	return;
+}
+

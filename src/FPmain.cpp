@@ -19,6 +19,15 @@ int target_x=1,target_y=1,target_face=1;
 #include"FPplane.hpp"
 #include"FPUI.hpp"
 #include"serialize.hpp"
+#include"parameter.hpp"
 int main(int argc,char **argv){
+	init(argc,argv);
+	stage_now=0;
+	create_plane();
+	Button[++Buttonum].create_button(LeftEdgeAxis,TopAxis-1,10,0.9,1);
+	glutMainLoop();
+	printf("end\n");
+	char ch=getchar();
+	DestroyWindow();
     return 0;
 }

@@ -8,7 +8,7 @@ bin/main: $(obj)
 tmp/FPmain.o: FPmain.cpp FPplane.hpp
 	g++ -c $< -o $@ $(flags) $(GLflags)
 
-tmp/FPUI.o: FPUI.cpp FPplane.hpp
+tmp/FPUI.o: FPUI.cpp FPUI.hpp
 	g++ -c $< -o $@ $(flags) $(GLflags)
 
 tmp/FPplane.o: FPplane.cpp FPplane.hpp
